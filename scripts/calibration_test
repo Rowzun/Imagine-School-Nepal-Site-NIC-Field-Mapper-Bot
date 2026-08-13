@@ -1,0 +1,22 @@
+// Simple analog reader for pin A2 that prints both
+// the raw ADC value (0-1023) and the corresponding voltage.
+
+// ── CONFIG ───────────────────────────────────────────────
+const float REF_VOLTAGE = 4.92500;   // change to 3.3 if you use a 3V-only board
+const unsigned long READ_INTERVAL_MS = 500;  // 10 readings per second
+// ─────────────────────────────────────────────────────────
+
+void setup() {
+  Serial.begin(9600);            // open Serial Monitor (Ctrl+Shift+M)
+}
+
+void loop() {
+  int raw = analogRead(A2);                      // raw ADC counts
+  float volts = raw * REF_VOLTAGE / 1023.0;      // convert to volts
+
+  Serial.print(raw);
+  Serial.print('\t');        // tab-separated
+  Serial.println(volts, 5);  // 3 decimal places (e.g., 2.347 V)
+
+  delay(READ_INTERVAL_MS);
+}
