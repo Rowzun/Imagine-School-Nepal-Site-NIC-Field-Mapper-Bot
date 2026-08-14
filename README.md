@@ -3,7 +3,7 @@
 ## Overview
 Design of a **modular, cost‑effective robot** for mapping magnetic fields within a defined volume.
 <div align="center">
-  <img src="Attachments/image1.jpg" width="450" alt="Ruler attached to linear stage" />
+  <img src="Attachments/image1.jpeg" width="450" alt="Ruler attached to linear stage" />
 </div>
 
 
@@ -31,10 +31,10 @@ Design of a **modular, cost‑effective robot** for mapping magnetic fields with
 | Component | Qty | Unit Price (USD) | Link |
 |---|:---:|:---:|---|
 | Linear stages (Z 300 mm, XY 300 mm – 12 mm pitch) | 1 | 338.54 | [Product](https://www.aliexpress.us/item/3256805348651313.html?spm=a2g0o.order_detail.order_detail_item.3.5fa4f19cjVbIP4&gatewayAdapt=glo2usa) |
-| TB6600 stepper driver | 3 | 5.60 | [Product](https://www.aliexpress.us/item/3256805781393725.html?spm=a2g0o.order_detail.order_detail_item.2.1ed6f19cobQnNT&gatewayAdapt=glo2usa) |
-| Arduino UNO R4 Minima | 1 | 16.00 | [Product](https://thepihut.com/products/arduino-uno-r4-minima) |
-| Gaussmeter GM2 | 1 | 902.00 | [Product](https://www.alphalabinc.com/products/gm2/?srsltid=AfmBOor0p2l-VF9fIRODsZqY854WaDDNnBIFsOJ6kHjN2p6iCgCOzTLX) |
-| **Total** |  | **1262.14** |  |
+| M422 stepper driver | 3 | 5.60 | [Product](https://www.aliexpress.us/item/3256805781393725.html?spm=a2g0o.order_detail.order_detail_item.2.1ed6f19cobQnNT&gatewayAdapt=glo2usa) |
+| Arduino UNO | 1 | 16.00 | [Product](https://thepihut.com/products/arduino-uno-r4-minima) |
+| SS49e Hall sensor | 1 | 1 | [Product](https://www.alphalabinc.com/products/gm2/?srsltid=AfmBOor0p2l-VF9fIRODsZqY854WaDDNnBIFsOJ6kHjN2p6iCgCOzTLX) |
+| **Total** |  | **361.14** |  |
 
 ---
 
@@ -104,6 +104,7 @@ Design of a **modular, cost‑effective robot** for mapping magnetic fields with
 - Defines Pin map of the arduino
 - Listens for simple text commands (X+, X-, Y+, Y-, Z+, Z-,) sent over USB at 9600 baud (Links [`Arduino_runner.py`](scripts/Arduino_runner.py) with Arduino)
 - Moves the robot 1 mm per command by pulsing the chosen step pin 533.34 times (defined by callibration)
+- Read the raw ADC values from the SS49e hall sensor and using the calibration values, convert the voltage value to gauss and print to serial when prompted
 
 
 ---
@@ -127,11 +128,32 @@ Secure the frame to a **≥ 40 × 60 × 1.5 cm** wooden panel for st
 </div>
 A low‑cost variable supply (~15 USD) simplifies testing different motor voltages and current limits.
 
-### 4 · TB6600 DIP‑Switch Settings
+### 4 · M422 DIP‑Switch Settings
 <div align="center">
   <img src="Attachments/tip4.jpg" width="450" alt="TB6600 switch positions" />
 </div>
 Set switches **S1–S6 = OFF** to match the firmware micro‑stepping and protect the motors.
+
+### 5 . Hall sensor Calibration Steps
+- Hall sensor selection: Based on voltage compatibility, linearity, measurement axis, drift etc. We selected SS49e hall sensor due to overall fit and local availability 
+- ADC conversion: For the buildlab we selected the internal 10bit SAR based ADC of UNO board with internal 5V reference. In future experiments, we are planning to move to a 16bit external ADC with a clean isolated power supply.
+- Measurement of Ground truth Gauss Values: For the N48 12mm cubic magnet used in our build, we obtained values at 1mm spacing in a linear axis using a reference NMR meter.
+- Measurement of SS49e sensor output voltage at the same location using same magnet. For this we used our field mapper robot and a script that moves the robot by 1mm and then takes the voltage readings from the sensor after averaging 100 samples.
+- Data conditioning and filtering: we removed readings where the 49e hall sensor readings were saturated
+- Measurement of V0 (The output value of the sensor in the absence of any magnetic field). Since V0 varies with temperature, fresh V0 values are measured everytime.
+- Combine data sets, distance vs Vout (sensor) and distance vs Gauss (NMR meter) to obtain the Gauss Vs Voltage values.
+<div align="center">
+  <img src="Calibration_Data/Gauss vs voltage.PNG" width="450" alt="Gauss vs voltage curve" />
+</div>
+
+- Fit a single parameter linear model
+V= Sensitivity*B + V0
+<div align="center">
+  <img src="Calibration_Data/Fitting Curve.PNG" width="450" alt="Fitting Curve" />
+</div>
+
+- In the arduino script, use the obtained measurement variables, V0 and Sensitivity. 
+Bgauss= (Vmeasured-V0)/Sensitivity
 
 ---
 
