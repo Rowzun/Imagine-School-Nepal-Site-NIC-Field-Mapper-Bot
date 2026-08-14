@@ -59,7 +59,7 @@ Design of a **modular, cost‑effective robot** for mapping magnetic fields with
 
 1. Clone the repository:  
     ```bash  
-    git clone https://github.com/SipanHovsep/Field_mapper_robot
+    git clone https://github.com/Rowzun/Imagine-School-Nepal-Site-NIC-Field-Mapper-Bot.git
     ```  
 2. Install dependencies:  
     ```bash  
