@@ -10,6 +10,7 @@ Design of a **modular, cost‑effective robot** for mapping magnetic fields with
 ## Software requirements
 * **PyCharm** – Python IDE (Python 3.13) – [Link](https://www.jetbrains.com/pycharm/)
 * **Arduino IDE** – Native Arduino software – [Link](https://www.arduino.cc/en/software/)
+* **VS Code** – Native Arduino software – [Link](https://www.arduino.cc/en/software/)
 
 ## Hardware requirements
 * **CPU:** 64‑bit dual‑core (modern)  
